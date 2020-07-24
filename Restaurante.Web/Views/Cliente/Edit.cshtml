@@ -1,0 +1,255 @@
+﻿@model Restaurante.Application.ViewModel.ClienteViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ClienteViewModel</h4>
+<hr />
+<div class="row">
+    @*<div class="col-md-12">*@
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="form-group col-md-4">
+                @Html.HiddenFor(x => x.Id)
+            </div>
+            <div class="form-group col-md-4">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-4">
+                <label asp-for="Apelido" class="control-label"></label>
+                <input asp-for="Apelido" class="form-control" />
+                <span asp-validation-for="Apelido" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="col-md-6">Telefone</div>
+                <div class="col-md-6"> <input type="text" id="txtTelefone" /></div>
+
+                <input type="button" id="addTelefoneRow" value="Adicionar Telefone" />
+
+                <table id="tblTelefones" class="table" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="width:150px">Telefone</th>
+                            <th style="width:150px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9"> Rua</div>
+            <div class="col-md-3"> Número</div>
+            <div class="col-md-9"> <input type="text" id="txtRua" /></div>
+            <div class="col-md-3"> <input type="text" id="txtNumero" /></div>
+            <div class="col-md-6"> Complemento</div>
+            <div class="col-md-6"> Bairro</div>
+            <div class="col-md-6"> <input type="text" id="txtComplemento" /></div>
+            <div class="col-md-6"> <input type="text" id="txtBairro" /></div>
+            <div class="col-md-6"> Cidade</div>
+            <div class="col-md-6"> <input type="text" id="txtCidade" /></div>
+        </div>
+
+        <input type="button" id="addEnderecoRow" value="Adicionar Endereço" />
+
+        <table id="tblEnderecos" class="table" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th style="width:150px">Rua</th>
+                    <th style="width:150px">Número</th>
+                    <th style="width:150px">Complemento</th>
+                    <th style="width:150px">Bairro</th>
+                    <th style="width:150px">Cidade</th>
+                    <th style="width:150px"></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+
+        <input type="button" id="btnSave" value="Save All" />
+    </form>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+
+<script type="text/javascript">
+
+        $(document).ready(function () {
+            var id = $("#Id");
+
+            $.ajax({
+                url: "@Url.Action(@"CarregarDetalhes")",
+                type: "GET",
+                data: { id: id.val() },
+                success: function (data) {
+                    CarregarDetalhes(data);
+                }
+            });
+
+        });
+
+    function CarregarDetalhes(data) {
+        console.log(data);
+            for (var i = 0; i < data.listEndereco.length; i++) {
+
+                var row = $("<tr>");
+                console.log(data.listEndereco[i]);
+                console.log(data.listEndereco[i].endereco);
+                row.append($("<td>" + data.listEndereco[i].rua+ "</td>"))
+                   .append($("<td>" + data.listEndereco[i].numero + "</td>"))
+                   .append($("<td>" + data.listEndereco[i].complemento + "</td>"))
+                   .append($("<td>" + data.listEndereco[i].bairro + "</td>"))
+                   .append($("<td>" + data.listEndereco[i].cidade + "</td>"))
+                   .append($("<td><input type='button' value='Remover' onclick='RemoveEndereco(this)' /></td>"));
+
+                $("#tblEnderecos tbody").append(row);
+            }
+
+            for (var i = 0; i < data.listTelefone.length; i++) {
+                                     
+                var row = $("<tr>");
+                row.append($("<td>" + data.listTelefone[i].numeroTelefone + "</td>"))
+                   .append($("<td><input type='button' value='Remover' onclick='RemoveTelefone(this)' /></td>"));
+
+                $("#tblTelefones tbody").append(row);
+            }
+        };
+
+        function Remove(button) {
+            //Determine the reference of the Row using the Button.
+            var row = $(button).closest("TR");
+            var name = $("TD", row).eq(0).html();
+            var table = $("#tblEnderecos")[0];
+
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+        };
+
+        $("body").on("click", "#btnSave", function () {
+            //Loop through the Table rows and build a JSON array.
+            var clientes = new Array();
+            var enderecos = new Array();
+            var telefones = new Array();
+
+            var cliente = -{};
+            cliente.Id = "b36c61b4-0d1c-4c36-8e56-b43be845d70b";
+            cliente.Nome = $("#Nome").val();
+            cliente.Apelido = $("#Apelido").val();
+
+            $("#tblTelefones TBODY TR").each(function () {
+                var row = $(this);
+                telefone = {};
+                telefone.NumeroTelefone = row.find("TD").eq(0).html();
+                telefones.push(telefone);
+            });
+
+            $("#tblEnderecos TBODY TR").each(function () {
+                var row = $(this);
+                endereco = {};
+                endereco.Rua = row.find("TD").eq(0).html();
+                endereco.Numero = row.find("TD").eq(1).html();
+                endereco.Complemento = row.find("TD").eq(2).html();
+                endereco.Bairro = row.find("TD").eq(3).html();
+                endereco.Cidade = row.find("TD").eq(4).html();
+
+                enderecos.push(endereco);
+            });
+
+
+            cliente.listTelefone = telefones;
+            cliente.listEndereco = enderecos;
+            clientes.push(cliente);
+            console.log(JSON.stringify(clientes));
+
+
+            ////Send the JSON array to Controller using AJAX.
+            $.ajax({
+                type: "POST",
+                url: "/Cliente/InsertCustomers",
+                data: JSON.stringify(clientes),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    alert(r + " record(s) inserted.");
+                }
+            });
+        });
+
+        $("#addEnderecoRow").click(function () {
+            var row = $("<tr>");
+
+            var rua = $("#txtRua");
+            var numero = $("#txtNumero");
+            var complemento = $("#txtComplemento");
+            var bairro = $("#txtBairro");
+            var cidade = $("#txtCidade");
+
+            row.append($("<td>" + rua.val() + "</td>"))
+                .append($("<td>" + numero.val() + "</td>"))
+                .append($("<td>" + complemento.val() + "</td>"))
+                .append($("<td>" + bairro.val() + "</td>"))
+                .append($("<td>" + cidade.val() + "</td>"))
+                .append($("<td><input type='button' value='Remover' onclick='RemoveEndereco(this)' /></td>"));
+
+            rua.val("");
+            numero.val("");
+            complemento.val("");
+            bairro.val("");
+            cidade.val("");
+
+            $("#tblEnderecos tbody").append(row);
+        });
+
+        $("#addTelefoneRow").click(function () {
+            var row = $("<tr>");
+
+            var telefone = $("#txtTelefone");
+
+            row.append($("<td>" + telefone.val() + "</td>"))
+                .append($("<td><input type='button' value='Remove' onclick='RemoveTelefone(this)' /></td>"));
+
+            telefone.val("");
+
+            $("#tblTelefones tbody").append(row);
+        });
+
+        function RemoveTelefone(button) {
+            //Determine the reference of the Row using the Button.
+            var row = $(button).closest("TR");
+            var name = $("TD", row).eq(0).html();
+            var table = $("#tblTelefones")[0];
+
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+        };
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+}
+
+

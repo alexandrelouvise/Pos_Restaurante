@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Restaurante.Application.ViewModel.PedidoViewModel>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div id="divCliente">
+    <div>
+        <div>Nome</div>
+        <div> <input type="text" id="txtNome" /></div>
+        <div>Telefone</div>
+        <div> <input type="text" id="txtTelefone" /></div>
+        <div>Endereço</div>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Selecione
+            </button>
+            <div id="ddlEndereco" class="dropdown-menu">
+                <a class="dropdown-item" id="1">Action</a>
+                <a class="dropdown-item" id="2">Another action</a>
+                <a class="dropdown-item" id="3">Something else here</a>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <select class="selectpicker" id="selectEndereco">
+                    <option value="" disabled selected>Selecione o Endereço</option>
+
+                </select>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+
+                <select class="selectpicker" id="selectFormaPagamento">
+                    <option value="" disabled selected>Forma de Pagamento</option>
+
+                </select>
+
+            </div>
+            <div class="col-md-4">
+                Observação
+                <input type="text" id="txtObservacao" />
+
+            </div>
+            <div class="col-md-4">
+                Total Pedido
+                <label id="lblValorPedido" />
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Prato
+            </th>
+            <th>
+                Adicional
+            </th>
+            <th>
+                Valor
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+
+<script type="text/javascript">
+
+        $(document).ready(function () {
+            var id = $("#Id");
+
+            $.ajax({
+                url: "@Url.Action(@"CarregarEnderecos")",
+                type: "GET",
+                data: { id: id.val() },
+                success: function (data) {
+                    CarregarEnderecos(data);
+                }
+            });
+
+        });
+
+    function CarregarEnderecos(data) {
+        console.log(data);
+            for (var i = 0; i < data.listEndereco.length; i++) {
+
+                var item = "<a class='dropdown-item' href='#'>" + data.listEndereco[i].endereco + "</a>";
+                
+                $("#ddlEndereco").append(item);
+            }
+
+            
+        };
